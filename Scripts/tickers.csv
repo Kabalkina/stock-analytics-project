@@ -1,0 +1,15 @@
+country,ticker,company,sector
+USA,AAPL,Apple,IT
+USA,MSFT,Microsoft,IT
+USA,NVDA,NVIDIA,IT
+USA,ORCL,Oracle,IT
+USA,IBM,IBM,IT
+USA,JNJ,Johnson & Johnson,Healthcare
+USA,PFE,Pfizer,Healthcare
+USA,MRK,Merck & Co.,Healthcare
+USA,ABBV,AbbVie,Healthcare
+USA,UNH,UnitedHealth Group,Healthcare
+Germany,SAP.DE,SAP,IT
+Germany,IFX.DE,Infineon,IT
+Germany,FME.DE,Fresenius Med.,Healthcare
+Germany,SHL.DE,Siemens Health.,Healthcare
