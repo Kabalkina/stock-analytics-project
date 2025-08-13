@@ -1,4 +1,4 @@
-# stock-analytics-
+# stock-analytics-analytics
 
 🧠 Project Objective
 Develop a low-risk, quarterly-updated stock selection strategy using machine learning, targeting US and German IT & Healthcare stocks, based on momentum + stability signals.
