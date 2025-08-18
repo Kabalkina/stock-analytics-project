@@ -1,9 +1,11 @@
-# stock-analytics-analytics
+# Stock Analytics Project
+
+Despite a lot of free available information many people have low knowledge what to do with their money despice keeping in their bank account with low interest rates. Also many are afraid to lose their money and theyfore better don't touch the money at all. My project is adressed to this group of people to see if investing not very often (quartelly) into the low or medium risk stocks could bring any value. It should be relatively safe and not that overwhelming as no need to check stock market charts every day or week and worry about making new tradying decisions. In other words, it is designed for lazy (in the good way) and risk reversive people like myself :)
 
 🧠 Project Objective
-Develop a low-risk, quarterly-updated stock selection strategy using machine learning, targeting US and German IT & Healthcare stocks, based on momentum + stability signals.
+Develop a low-risk, quarterly-updated stock selection strategy using machine learning, targeting diverse stocks around the globe (America, Europe and Asia-Pasific regions), based on momentum + stability signals.
 
-Model will label each stock as Buy (1) or Do Not Buy (0) each quarter.
+Model will label each stock as buy signal (1 for "yes" and 0 for "no") each quarter.
 
 # data_extraction Notebook:
 🔹 Input
