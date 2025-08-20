@@ -32,6 +32,7 @@ import yfinance as yf
 from pandas_datareader import data as pdr
 from pathlib import Path
 import time
+import json
 
 from config_loader import START_DATE, END_DATE, TICKERS_LIST, FRED_DEFAULTS, MARKET_TICKERS
 
@@ -521,6 +522,14 @@ class DataRepo:
 
             self.quarterly_data.to_csv(file_path, index=False)
             logger.info(f"Saved {len(self.quarterly_data)} quarterly records")
+
+            # Save/update metadata.json with last update date
+            metadata_path = os.path.join(os.path.dirname(file_path), "metadata.json")
+            metadata = {"last_update": datetime.today().strftime("%Y-%m-%d %H:%M:%S")}
+            with open(metadata_path, "w") as f:
+                json.dump(metadata, f)
+
+            self.logger.info(f"Dataset saved to {file_path}, metadata updated")
         else:
             logger.info("No quarterly data to save")
 

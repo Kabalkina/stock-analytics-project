@@ -3,6 +3,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import datetime
+import os
+import json
 
 from scripts.data import DataRepo
 from scripts.model import Model
@@ -56,6 +58,7 @@ def train_model(data):
         model.split_data()
         model.train_model()
         model.make_predictions()
+        model.save_data_for_simulation()
         return model
     else:
         st.info("📂 Loading existing rf_model_pred.csv from Data/")
@@ -76,6 +79,7 @@ def run_simulation(model_df):
         st.info("💼 Running trading simulation...")
         sim = StrategySimulation()
         history, trades, metrics = sim.backtest_fixed_capital(model_df)
+        sim.save_dataset()
         return history, trades, metrics
     else:
         st.info("📂 Loading existing simulation.csv from Data/")
@@ -87,11 +91,29 @@ def run_simulation(model_df):
         trades['date'] = pd.to_datetime(trades['date'], errors='coerce')
         return history, trades, metrics
 
-
+# Get last update date from metadata.json if it exists
+metadata_path = os.path.join("data", "metadata.json")
+if os.path.exists(metadata_path):
+    with open(metadata_path, "r") as f:
+        metadata = json.load(f)
+    last_update = metadata.get("last_update", "Unknown")
+else:
+    last_update = "Not available"
 # -------------------------------------------------------------------------
 # Header
 # -------------------------------------------------------------------------
-st.markdown("<div class='main-title'>📊 **Quarterly Stock Market Strategy**</div>", unsafe_allow_html=True)
+#st.markdown("<div class='main-title'>📊 **Quarterly Stock Market Strategy**</div>", unsafe_allow_html=True)
+st.markdown(
+    f"""
+    <h1 style="text-align: center; font-size: 40px; font-weight: bold;">
+        📊 Quarterly Stock Market Strategy
+    </h1>
+    <p style="text-align: center; font-size: 16px; color: gray;">
+        Last updated: {last_update}
+    </p>
+    """,
+    unsafe_allow_html=True
+)
 st.markdown(
     """
     Welcome to the **Quarterly Stock Strategy Dashboard**.  
