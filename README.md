@@ -18,6 +18,9 @@ without daily trading?*
 This project was developed as part of the **DataTalksClub -- Stock
 Market Analytics course**.
 
+You can access Streamlit Dashboard to see the visualisations of stock
+prices, prediction model and trading simulation.
+
 ------------------------------------------------------------------------
 
 ## 🏗️ Project Structure
@@ -108,13 +111,14 @@ data range)\
 ### 4. Run pipeline
 
 ``` bash
-python main.py
+streamlit run main.py
 ```
 
 This will: - Download and process financial data\
 - Train a Random Forest model\
 - Run trading simulation\
-- Save all results into the `Data/` folder
+- Save all results into the `Data/` folder\
+- Generate a Streamlit Dashboard with visuals and KPIs
 
 ------------------------------------------------------------------------
 

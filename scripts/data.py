@@ -31,6 +31,7 @@ import pandas as pd
 import yfinance as yf
 from pandas_datareader import data as pdr
 from pathlib import Path
+import time
 
 from config_loader import START_DATE, END_DATE, TICKERS_LIST, FRED_DEFAULTS, MARKET_TICKERS
 
@@ -445,6 +446,9 @@ class DataRepo:
             q = self.get_price_features(t, start=start_date, end=end_date, features=True)
             if not q.empty:
                 parts.append(q)
+
+            time.sleep(1)
+
         if not parts:
             logger.error("No price features produced.")
             return pd.DataFrame()
@@ -530,4 +534,4 @@ class DataRepo:
         data_dir = os.path.join(script_dir, "../Data")
         file_path = os.path.join(data_dir, "quarterly_data.csv")
         self.quarterly_data = pd.read_csv(file_path)
-        
+        self.quarterly_data['date'] = pd.to_datetime(self.quarterly_data['date'], errors='coerce')

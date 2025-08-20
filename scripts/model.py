@@ -4,6 +4,7 @@ import pandas as pd
 from sklearn.model_selection import GridSearchCV, TimeSeriesSplit
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from sklearn.impute import SimpleImputer
 import joblib
 
 from scripts.data import DataRepo
@@ -38,22 +39,36 @@ class Model:
     CLASSIFICATION_REPORT: dict
     CONFUSION_MATRIX: pd.DataFrame
 
-    def __init__(self, quarterly_data: DataRepo):
-        # init quarterly_df
-        self.quarterly_df = quarterly_data.quarterly_data.copy(deep=True)
+
+    def __init__(self, quarterly_data):
+        # Accept DataRepo or DataFrame
+        if hasattr(quarterly_data, "quarterly_data"):
+            self.quarterly_df = quarterly_data.quarterly_data.copy(deep=True)
+        else:
+            self.quarterly_df = quarterly_data.copy(deep=True)
+
+        # Initialize df as a working copy
+        self.df = self.quarterly_df.copy(deep=True)
+        self.df['date'] = pd.to_datetime(self.df['date'], errors='coerce')
 
 
     def define_categories(self):
         self.CATEGORICAL = ['ticker', 'sector']
         self.TO_PREDICT = ['buy_signal']
         self.USED_BUY_SIGNAL_LABEL = ['qma_2', 'qma_4', 'return_2q', 'sp500_qoq','momentum_3q', 'trailingPE', 'interest_us_qoq']
-        self.TO_DROP = ['companyName', 'date', 'year', 'quarter', 'close'] + self.USED_BUY_SIGNAL_LABEL + self.CATEGORICAL
-
+        self.TO_DROP = ['companyName', 'date', 'year', 'quarter', 'close', 'region'] + self.USED_BUY_SIGNAL_LABEL + self.CATEGORICAL
+        # TODO remove region afterwards
 
     def get_dummies(self):
         dummy_variables = pd.get_dummies(self.df[self.CATEGORICAL], dtype='int32')
         self.df = pd.concat([self.df, dummy_variables], axis=1)
 
+    def handle_nans(self):
+        # Handle NaNs in numeric features
+        imputer = SimpleImputer(strategy="median")
+
+        numeric_features = self.df.drop(self.CATEGORICAL + self.TO_PREDICT + self.TO_DROP, axis=1).columns
+        self.df[numeric_features] = imputer.fit_transform(self.df[numeric_features])
 
     def split_data(self):
         # 1. Sort chronologically
@@ -81,6 +96,11 @@ class Model:
 
         X_test = self.test_df.drop(self.CATEGORICAL + self.TO_PREDICT + self.TO_DROP, axis=1)
         y_test = self.test_df[self.TO_PREDICT[0]]
+
+        # Handle NaNs only for numeric features
+        #imputer = SimpleImputer(strategy="median")
+        #X_train = imputer.fit_transform(X_train)
+        #X_test = imputer.transform(X_test)
 
         # Define model and grid search
         param_grid = {
@@ -140,8 +160,9 @@ class Model:
     def make_predictions(self):
 
         logger.info("Making predictions on full dataset")
-
-        y_pred_all = self.MODEL.predict(self.df.drop(self.CATEGORICAL + self.TO_PREDICT + self.TO_DROP, axis=1))
+        X_all = self.df.drop(self.CATEGORICAL + self.TO_PREDICT + self.TO_DROP, axis=1)
+        #X_all = self.imputer.transform(X_all)
+        y_pred_all = self.MODEL.predict(X_all)
         self.df['pred_rf'] = y_pred_all
 
 
@@ -151,7 +172,7 @@ class Model:
         data_dir = os.path.join(script_dir, "../Data")
         path = os.path.join(data_dir, "rf_model_pred.csv")
 
-        rf_model_pred = self.df[['date', 'ticker', 'close','buy_signal', 'pred_rf']]
+        rf_model_pred = self.df[['date', 'year', 'quarter', 'ticker', 'close','buy_signal', 'pred_rf']]
         rf_model_pred.to_csv(path, index=False)
         logger.info(f"Saved predictions to {path}")
         return rf_model_pred
