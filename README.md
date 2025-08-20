@@ -18,12 +18,11 @@ without daily trading?*
 This project was developed as part of the **DataTalksClub -- Stock
 Market Analytics course**.
 
-You can access **Streamlit Dashboard** to see the visualisations of stock
+Check out **[Streamlit Dashboard](https://stockmarketproject.streamlit.app/)** to see the visualisations of stock
 prices, prediction model and trading simulation.
 
-[Check up the Dashboard](https://stockmarketproject.streamlit.app/)
 
-![Dashboard Preview](image/dashboard.png)
+![Dashboard Preview](images/dashboard.png)
 
 ------------------------------------------------------------------------
 
