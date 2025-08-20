@@ -22,7 +22,10 @@ Check out **[Streamlit Dashboard](https://stockmarketproject.streamlit.app/)** t
 prices, prediction model and trading simulation.
 
 
+
 ![Dashboard Preview](images/dashboard.png)
+
+
 
 ------------------------------------------------------------------------
 
