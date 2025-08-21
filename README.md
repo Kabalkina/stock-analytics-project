@@ -55,10 +55,12 @@ prices, prediction model and trading simulation.
     │   └── simulation.py       # Backtesting and portfolio simulation
     │
     ├── images/                 # Dashboard screenshots
-    └── Data/                   # Output data & results (created at runtime)
+    └── data/                   # Output data & results (created at runtime)
         ├── quarterly_data.csv
         ├── rf_model_pred.csv
-        └── simulation.csv
+        ├── portfolio_history.csv
+        ├── trades.csv
+        └── metrics.json
 
 ------------------------------------------------------------------------
 
