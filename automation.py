@@ -57,23 +57,57 @@ def main():
     # 2) MODEL
     model = None
     if TRAIN_MODEL:
-        log.info("Training model")
-        model = Model(data)
-        model.define_categories()
-        model.get_dummies()
-        model.handle_nans()
-        model.split_data()
-        model.train_model()
-        model.make_predictions()
-        model.save_data_for_simulation()
+        log.info("Training model...")
+        cached = Path("Data/rf_model_pred.csv")
+
+        if cached.exists():
+            log.info("Found existing rf_model_pred.csv → loading instead of retraining")
+            df = pd.read_csv(cached, parse_dates=["date"])
+
+            dummy = type("DummyModel", (), {})()
+            dummy.df = df
+            dummy.CLASSIFICATION_REPORT = {"note": "Skipped training – loaded from CSV"}
+            dummy.CONFUSION_MATRIX = [[0, 0], [0, 0]]
+            model = dummy
+        else:
+            # train from scratch
+            model = Model(data)
+            model.define_categories()
+            model.get_dummies()
+            model.handle_nans()
+            model.split_data()
+            model.train_model()
+            model.make_predictions()
+            model.save_data_for_simulation()
+            log.info("Model trained & saved.")
     else:
-        log.info("Skipping training (TRAIN_MODEL=false)")
+        log.info("Skipping training → loading rf_model_pred.csv")
+        cached = Path("Data/rf_model_pred.csv")
+        if not cached.exists():
+            raise FileNotFoundError("rf_model_pred.csv not found. You must run TRAIN_MODEL=true first.")
+        df = pd.read_csv(cached, parse_dates=["date"])
+
+        dummy = type("DummyModel", (), {})()
+        dummy.df = df
+        dummy.CLASSIFICATION_REPORT = {"note": "Skipped training – loaded from CSV"}
+        dummy.CONFUSION_MATRIX = [[0, 0], [0, 0]]
+        model = dummy
 
     # 3) SIMULATION
     if RUN_SIMULATION:
         log.info("Running backtest")
         sim = StrategySimulation()
-        history, trades, metrics = sim.backtest_fixed_capital(data)
+
+        # Use model.df if model was trained
+        if model is not None:
+            df_for_sim = model.df
+        else:
+            # Otherwise load the cached rf_model_pred.csv
+            cached = Path("data/rf_model_pred.csv")
+            if not cached.exists():
+                raise FileNotFoundError("rf_model_pred.csv not found. Set TRAIN_MODEL=true first.")
+            df_for_sim = pd.read_csv(cached, parse_dates=["date"])
+        history, trades, metrics = sim.backtest_fixed_capital(df_for_sim)
 
         out_dir = Path("data")
         ensure_dir(out_dir)
