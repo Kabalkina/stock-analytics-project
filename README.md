@@ -164,6 +164,8 @@ This will: - Download and process financial data\
 - Generate a Streamlit Dashboard with visuals and KPIs
 - Run an automated update
 
+If Yahoo Finance doesn't work, the data in csv format is stored in Google drive [here](https://drive.google.com/drive/folders/1fdJtoJGsMp1IoJdFj1Ru2AscUCTpaPqh?usp=sharing)
+
 ------------------------------------------------------------------------
 
 ## 📊 Example Outputs
