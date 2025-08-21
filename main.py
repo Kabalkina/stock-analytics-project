@@ -166,7 +166,19 @@ with tab2:
     # Classification Report
     with col1:
         st.subheader("📊 Classification Report")
-        st.json(model.CLASSIFICATION_REPORT)
+        report = model.CLASSIFICATION_REPORT
+
+        # Convert dict → DataFrame
+        report_df = pd.DataFrame(report).T
+        report_df = report_df.round(3)  # cleaner numbers
+
+        # Highlight max values in each column (precision, recall, f1-score)
+        def highlight_max(s):
+            is_max = s == s.max()
+            return ['background-color: lightgreen' if v else '' for v in is_max]
+
+        styled_report = report_df.style.apply(highlight_max, subset=['precision', 'recall', 'f1-score'])
+        st.dataframe(styled_report, use_container_width=True)
 
     # Confusion Matrix
     with col2:
@@ -191,7 +203,7 @@ with tab2:
         st.warning("No buy signals generated for this quarter.")
     else:
         st.dataframe(buy_list, use_container_width=True)
-
+        
 # -------------------------------------------------------------------------
 # TAB 3 – TRADING SIMULATION
 # -------------------------------------------------------------------------

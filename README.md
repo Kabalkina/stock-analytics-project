@@ -1,5 +1,8 @@
 # 📈 Quarterly Stock Market Strategy
 
+**Tags:** `Finance` `Machine Learning` `Stock Market` `Backtesting` `Automation` `Streamlit`  
+**Technologies:** Python · Scikit-learn · Streamlit · GitHub Actions
+
 ## 🌟 Introduction
 
 Despite the abundance of freely available financial information, many
@@ -30,10 +33,12 @@ prices, prediction model and trading simulation.
 ------------------------------------------------------------------------
 
 ## 🏗️ Project Structure
-
+  
     project-root/
     │
-    ├── main.py                 # Main entry point – runs the full pipeline
+    ├── main.py                 # Main entry point – runs the full pipeline and Streamlit dashboard app
+    ├── automation.py           # Monthly automation script (GitHub Actions entrypoint)
+    ├── .github/workflows/      # GitHub Actions automation (monthly updates)
     ├── config.yaml             # User configuration (dates, tickers, parameters)
     ├── config_loader.py        # Loads config.yaml for use in scripts
     ├── requirements.txt        # Python dependencies
@@ -49,10 +54,31 @@ prices, prediction model and trading simulation.
     │   ├── model.py            # Machine learning pipeline (Random Forest)
     │   └── simulation.py       # Backtesting and portfolio simulation
     │
+    ├── images/                 # Dashboard screenshots
     └── Data/                   # Output data & results (created at runtime)
         ├── quarterly_data.csv
         ├── rf_model_pred.csv
         └── simulation.csv
+
+------------------------------------------------------------------------
+
+## ⚙️ Automation (GitHub Actions)
+
+The project includes **monthly automation** to:  
+- Run pipeline on the **last day of the month**  
+- Refresh data (if `LOAD_DATA=True`)  
+- Retrain model (if `TRAIN_MODEL=True`)  
+- Run backtest & save updated results  
+
+Workflow defined in: `.github/workflows/monthly_update.yml`  
+
+### Example run log:
+```
+LOAD_DATA=False | TRAIN_MODEL=False | RUN_SIMULATION=True
+Loaded quarterly_data.csv (cached)
+Skipped model training (using rf_model_pred.csv)
+Backtest executed → updated portfolio_history.csv, trades.csv, metrics.csv
+```
 
 ------------------------------------------------------------------------
 
@@ -119,12 +145,22 @@ data range)\
 ``` bash
 streamlit run main.py
 ```
+### 5. GitHub Actions (optional)
+
+This workflow runs automatically on schedule.  
+If you'd like to run manually:
+
+```bash
+python automation.py
+```
+
 
 This will: - Download and process financial data\
 - Train a Random Forest model\
 - Run trading simulation\
 - Save all results into the `Data/` folder\
 - Generate a Streamlit Dashboard with visuals and KPIs
+- Run an automated update
 
 ------------------------------------------------------------------------
 
@@ -133,7 +169,9 @@ This will: - Download and process financial data\
 -   `quarterly_data.csv`: Engineered dataset (features per
     ticker/quarter)\
 -   `rf_model_pred.csv`: Model predictions (buy/hold signals)\
--   `simulation.csv`: Portfolio performance history
+-   `portfolio_history.csv`: Portfolio performance history
+-   `trades.csv`: Trades done bae´sed on the trading strategy
+-   `metrics.json`: Trading strategy performance
 
 ------------------------------------------------------------------------
 
