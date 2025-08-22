@@ -28,6 +28,8 @@ class Model:
     train_df: pd.DataFrame
     test_df: pd.DataFrame
 
+    X_train: pd.DataFrame
+
     #attributes
     CATEGORICAL: list
     TO_PREDICT: list
@@ -36,6 +38,7 @@ class Model:
 
     #performance
     MODEL: RandomForestClassifier
+    FEATURE_IMPORTANCES: pd.Series
     CLASSIFICATION_REPORT: dict
     CONFUSION_MATRIX: pd.DataFrame
 
@@ -97,6 +100,9 @@ class Model:
         X_test = self.test_df.drop(self.CATEGORICAL + self.TO_PREDICT + self.TO_DROP, axis=1)
         y_test = self.test_df[self.TO_PREDICT[0]]
 
+        #for visual in dashboard
+        self.X_train = X_train
+
         # Handle NaNs only for numeric features
         #imputer = SimpleImputer(strategy="median")
         #X_train = imputer.fit_transform(X_train)
@@ -135,6 +141,11 @@ class Model:
         best_model = grid_search.best_estimator_
         best_model.fit(X_train, y_train)
         self.MODEL = best_model
+
+        # Feature importances
+        importances = grid_search.best_estimator_.feature_importances_
+        features = X_train.columns
+        self.FEATURE_IMPORTANCES = pd.Series(importances, index=features).sort_values(ascending=False).head(10)
 
         # Save the model to a file
         model_filename = 'random_forest_model.joblib'

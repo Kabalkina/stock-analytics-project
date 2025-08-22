@@ -138,19 +138,32 @@ with tab1:
     st.markdown("<div class='sub-title'>📈 Quarterly Stock Data</div>", unsafe_allow_html=True)
 
     data = load_data()
-    st.success(f"Loaded {len(data)} rows of stock data")
+    st.success(f"Loaded {len(data)} rows of {data['ticker'].nunique()} stocks")
 
     st.dataframe(data.head(20), use_container_width=True)
 
-    ticker_choice = st.selectbox("Select ticker to visualize:", sorted(data["ticker"].unique()))
-    df_ticker = data[data["ticker"] == ticker_choice]
+    col1, col2 = st.columns(2)
 
-    fig, ax = plt.subplots(figsize=(10, 5))
-    sns.lineplot(data=df_ticker, x="date", y="close", ax=ax, marker="o")
-    ax.set_title(f"{ticker_choice} – Quarterly Close Price")
-    ax.set_xlabel("Date")
-    ax.set_ylabel("Price")
-    st.pyplot(fig)
+    with col1:
+        ticker_choice = st.selectbox("Select Stock to visualize:", sorted(data["companyName"].unique()))
+        df_ticker = data[data["companyName"] == ticker_choice]
+
+        fig, ax = plt.subplots()
+        sns.lineplot(data=df_ticker, x="date", y="close", ax=ax, marker="o")
+        ax.set_title(f"{ticker_choice} – Quarterly Close Price")
+        ax.set_xlabel("Date")
+        ax.set_ylabel("Price")
+        st.pyplot(fig)
+
+    with col2:
+        top_momentum = data.sort_values('momentum_3q', ascending=False).drop_duplicates('ticker').head(10)
+        
+        fig, ax = plt.subplots()
+        sns.barplot(data=top_momentum, x='momentum_3q', y='companyName', hue='sector', ax=ax)
+        ax.set_title('Top 10 Stocks by 3Q Momentum')
+        ax.set_xlabel('3Q Momentum')
+        ax.set_ylabel('companyName')
+        st.pyplot(fig)
 
 # -------------------------------------------------------------------------
 # TAB 2 – RANDOM FOREST MODEL
@@ -188,6 +201,12 @@ with tab2:
         ax.set_title("Confusion Matrix")
         st.pyplot(fig)
 
+    # with col3:       
+    #     st.subheader("Feature Importances: top 10")
+    #     fig, ax = plt.subplots()
+    #     model.FEATURE_IMPORTANCES.plot(kind='bar', ax=ax)
+    #     ax.set_ylabel('Importance')
+
     # Current quarter buy signals
     st.subheader("📌 Recommended Stocks for Current Quarter")
 
@@ -197,7 +216,7 @@ with tab2:
         (model.df["year"] == current_year) &
         (model.df["quarter"] == current_quarter) &
         (model.df["pred_rf"] == 1)
-    ][["ticker", "close", "sector"]].drop_duplicates()
+    ][["ticker", 'companyName', "close", "sector"]].drop_duplicates()
 
     if buy_list.empty:
         st.warning("No buy signals generated for this quarter.")
@@ -219,15 +238,18 @@ with tab3:
     col2.metric("CAGR", f"{metrics['cagr']:.2f}%")
     col3.metric("Number of Trades", metrics["num_trades"])
 
-    # Equity curve
-    st.subheader("📈 Portfolio Value Over Time")
-    fig, ax = plt.subplots(figsize=(10, 5))
-    sns.lineplot(data=history, x="date", y="portfolio_value", ax=ax, label="Portfolio Value")
-    ax.set_xlabel("Date")
-    ax.set_ylabel("Portfolio Value ($)")
-    ax.set_title("Backtest Equity Curve")
-    st.pyplot(fig)
-
-    # Trades
-    st.subheader("📒 Trade Log")
-    st.dataframe(trades, use_container_width=True)
+    col1, col2 = st.columns(2)
+    with col1:
+        # Equity curve
+        st.subheader("📈 Portfolio Value Over Time")
+        fig, ax = plt.subplots(figsize=(10, 5))
+        sns.lineplot(data=history, x="date", y="portfolio_value", ax=ax, label="Portfolio Value")
+        ax.set_xlabel("Date")
+        ax.set_ylabel("Portfolio Value ($)")
+        ax.set_title("Backtest Equity Curve")
+        st.pyplot(fig)
+    
+    with col2:
+        # Trades
+        st.subheader("📒 Trade Log")
+        st.dataframe(trades, use_container_width=True)

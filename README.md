@@ -1,34 +1,42 @@
 # 📈 Quarterly Stock Market Strategy
 
-**Tags:** `Finance` `Machine Learning` `Stock Market` `Backtesting` `Automation` `Streamlit`  
-**Technologies:** Python · Scikit-learn · Streamlit · GitHub Actions
+
+**A data-driven exploration of whether “lazy” quarterly rebalancing can beat the bank — using Random Forest models, macro indicators, and trading simulations.**  
+
+**Technologies:** Python · Random Forest Model · Streamlit · GitHub Actions
+
 
 ## 🌟 Introduction
 
-Despite the abundance of freely available financial information, many
-people keep their savings idle in bank accounts with very low interest
-rates.\
-A large group is **risk-averse**: they fear losing money, and the
-complexity of daily market monitoring discourages them from investing at
-all.
+Despite the abundance of freely available financial information, many people still leave their savings idle in bank accounts earning minimal interest.
+For a large group of **risk-averse** investors, the fear of losing money — combined with the complexity and stress of daily market monitoring — discourages them from investing altogether.
 
-This project explores whether **low-frequency investing** ---
-rebalancing quarterly into low- to medium-risk stocks --- can be a safer
-and less overwhelming alternative.\
-In other words: *can "lazy" investors still achieve meaningful returns
-without daily trading?*
+This project asks a simple question:
+👉 *Can “lazy” investors, who only rebalance their portfolio a few times a year, still achieve meaningful returns without the pressure of daily trading?*
 
-This project was developed as part of the **DataTalksClub -- Stock
-Market Analytics course**.
+To test this idea, I analyzed **55 stocks across America, Europe, and Asia-Pacific** using data from Yahoo Finance covering the period **Jan 2020 – Aug 2025**. The full stock list can be found in `config.yaml`. To enrich the dataset, I also incorporated macro-financial indicators from FRED.
 
-Check out **[Streamlit Dashboard](https://stockmarketproject.streamlit.app/)** to see the visualisations of stock
-prices, prediction model and trading simulation.
+At the core of the project is a **Random Forest classification model** that predicts whether a stock should be bought in a given quarter (`buy_signal = 1`). The model was trained and evaluated, and then a simulation was run to test the strategy in practice.
 
+* **Initial capital**: $7,000
+* **Transaction fee**: $2
+* **Trading horizon (simulated)**: ~25 years of historical data
+* **Risk management**: stop-loss at -20% and take-profit at 30%
+* **Results**: Final portfolio value of **~$84k**, with a CAGR of **~11%**
+
+These results suggest that a **low-frequency, rule-based strategy** can offer an appealing balance between risk and return — especially for investors who don’t want to spend their lives glued to stock charts.
+
+You can explore the project interactively in the **[Streamlit Dashboard](https://stockmarketproject.streamlit.app/)**, where you’ll find:
+
+* Stock price visualizations
+* Random Forest model performance
+* Trading strategy simulation results
 
 
 ![Dashboard Preview](images/dashboard.png)
 
 
+This project was developed as part of the **DataTalksClub -- Stock Market Analytics course**.
 
 ------------------------------------------------------------------------
 
